@@ -22,10 +22,14 @@ jobs:
       - name: Install dependencies
         run: pip install requests python-dotenv
 
-      # 🔍 **New Debug Step: List All Files**
-      - name: Debug - List Files in Runner
-        run: ls -R  # Lists all files in the working directory
+      # **Debug Step: List Files Before Execution**
+      - name: Debug - List Repository Files
+        run: |
+          echo "Current Directory: $(pwd)"
+          echo "Listing Files:"
+          ls -R
 
+      # **Run the Script**
       - name: Run weather update script
         run: python send_to_domo.py  # Ensure this path is correct
         env:
