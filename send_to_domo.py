@@ -1,35 +1,31 @@
-import requests
-import os
-import json
-from dotenv import load_dotenv
-from fetch_weather import fetch_weather_data  # Import the new bulk data function
+name: Automate Weather Data Updates
 
-# Load environment variables
-load_dotenv()
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Runs every 30 minutes
+  workflow_dispatch:  # Allows manual triggering
 
-# Get Webhook URL from .env
-DOMO_WEBHOOK_URL = os.getenv("DOMO_WEBHOOK_URL")
+jobs:
+  update_domo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-def send_bulk_weather_to_domo():
-    """Fetch bulk weather data and send it to DOMO Webhook."""
-    weather_data = fetch_weather_data()  # Fetch multiple cities' weather data
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    if weather_data:
-        headers = {"Content-Type": "application/json"}
-        
-        # Convert the data into JSON format
-        json_data = json.dumps(weather_data)
+      - name: Install dependencies
+        run: pip install requests python-dotenv
 
-        # Send data to DOMO
-        response = requests.post(DOMO_WEBHOOK_URL, headers=headers, data=json_data)
+      # 🔍 Debug Step - List All Files
+      - name: Debug - List files
+        run: ls -R
 
-        if response.status_code == 200:
-            print(f"✅ {len(weather_data)} rows successfully sent to DOMO.")
-        else:
-            print(f"❌ Error sending data to DOMO: {response.status_code}, {response.text}")
-    else:
-        print("❌ Failed to fetch weather data.")
-
-if __name__ == "__main__":
-    send_bulk_weather_to_domo()
-print("send_to_domo.py script executed successfully!")
+      - name: Run weather update script
+        run: python ./send_to_domo.py  # Ensure correct file path
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          DOMO_WEBHOOK_URL: ${{ secrets.DOMO_WEBHOOK_URL }}
