@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Ensures the full repo is checked out
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,16 +20,12 @@ jobs:
       - name: Install dependencies
         run: pip install requests python-dotenv
 
-      # **Debug Step: List Files Before Execution**
-      - name: Debug - List Repository Files
-        run: |
-          echo "Current Directory: $(pwd)"
-          echo "Listing Files:"
-          ls -R
-
-      # **Run the Script**
+      # Debugging step: List all files in the runner's working directory
+      - name: Debug - List files
+        run: ls -R
+      
       - name: Run weather update script
-        run: python send_to_domo.py  # Ensure this path is correct
+        run: python send_to_domo.py
         env:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           DOMO_WEBHOOK_URL: ${{ secrets.DOMO_WEBHOOK_URL }}
