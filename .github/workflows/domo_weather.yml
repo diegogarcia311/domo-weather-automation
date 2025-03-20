@@ -20,11 +20,11 @@ jobs:
       - name: Install dependencies
         run: pip install requests python-dotenv
 
-      # 🔍 Debug Step - List All Files
-      - name: Debug - List files
+      # 🔍 Debug Step 1 - List All Files
+      - name: Debug - List files in working directory
         run: ls -R
 
-      # 🔍 Debug Step - Check if send_to_domo.py exists
+      # 🔍 Debug Step 2 - Check if send_to_domo.py exists
       - name: Debug - Verify script location
         run: |
           if [ -f "send_to_domo.py" ]; then
