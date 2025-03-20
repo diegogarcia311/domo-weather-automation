@@ -1,34 +1,35 @@
 import requests
 import os
 import json
+from dotenv import load_dotenv
+from fetch_weather import fetch_weather_data  # Import the new bulk data function
 
 # Load environment variables
-OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
-DOMO_WEBHOOK_URL = os.getenv('DOMO_WEBHOOK_URL')
+load_dotenv()
 
-# Example function to fetch weather data
-def fetch_weather(city="Phoenix,US"):
-    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to fetch weather data: {response.status_code}")
-        return None
+# Get Webhook URL from .env
+DOMO_WEBHOOK_URL = os.getenv("DOMO_WEBHOOK_URL")
 
-# Send data to DOMO Webhook
-def send_to_domo():
-    weather_data = fetch_weather()
+def send_bulk_weather_to_domo():
+    """Fetch bulk weather data and send it to DOMO Webhook."""
+    weather_data = fetch_weather_data()  # Fetch multiple cities' weather data
+
     if weather_data:
-        formatted_data = {
-            "city": weather_data["name"],
-            "temperature": weather_data["main"]["temp"],
-            "humidity": weather_data["main"]["humidity"],
-            "weather": weather_data["weather"][0]["description"]
-        }
         headers = {"Content-Type": "application/json"}
-        response = requests.post(DOMO_WEBHOOK_URL, headers=headers, data=json.dumps([formatted_data]))
-        print(f"Data sent to DOMO: {response.status_code}")
+        
+        # Convert the data into JSON format
+        json_data = json.dumps(weather_data)
+
+        # Send data to DOMO
+        response = requests.post(DOMO_WEBHOOK_URL, headers=headers, data=json_data)
+
+        if response.status_code == 200:
+            print(f"✅ {len(weather_data)} rows successfully sent to DOMO.")
+        else:
+            print(f"❌ Error sending data to DOMO: {response.status_code}, {response.text}")
+    else:
+        print("❌ Failed to fetch weather data.")
 
 if __name__ == "__main__":
-    send_to_domo()
+    send_bulk_weather_to_domo()
+print("send_to_domo.py script executed successfully!")
