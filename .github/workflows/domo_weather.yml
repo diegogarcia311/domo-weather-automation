@@ -20,11 +20,11 @@ jobs:
       - name: Install dependencies
         run: pip install requests python-dotenv
 
-      # 🔍 Debug Step - List All Files in the Directory
+      # Debug Step - List All Files in the Directory
       - name: Debug - List files
         run: ls -R
 
-      # 🔍 Debug Step - Confirm send_to_domo.py Exists
+      # Debug Step - Confirm send_to_domo.py Exists
       - name: Debug - Verify send_to_domo.py
         run: |
           if [ -f "send_to_domo.py" ]; then
@@ -34,9 +34,9 @@ jobs:
             exit 1;
           fi
 
-      # ✅ Run the Weather Update Script (Only if the file exists)
+      # Run the Weather Update Script (Only if the file exists)
       - name: Run weather update script
-        run: python send_to_domo.py  # Ensure correct file path
+        run: python ./send_to_domo.py  # Ensure correct file path
         env:
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           DOMO_WEBHOOK_URL: ${{ secrets.DOMO_WEBHOOK_URL }}
