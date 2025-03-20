@@ -20,10 +20,21 @@ jobs:
       - name: Install dependencies
         run: pip install requests python-dotenv
 
-      # Debugging step: List all files in the runner's working directory
-      - name: Debug - List files
+      # ✅ Debugging Step: List all files before running the script
+      - name: Debug - List files in working directory
         run: ls -R
-      
+
+      # ✅ Debugging Step: Check if file exists
+      - name: Debug - Check if send_to_domo.py exists
+        run: |
+          if [ -f "send_to_domo.py" ]; then
+            echo "✅ send_to_domo.py found!";
+          else
+            echo "❌ ERROR: send_to_domo.py is missing!";
+            exit 1;
+          fi
+
+      # ✅ Run the weather update script
       - name: Run weather update script
         run: python send_to_domo.py
         env:
